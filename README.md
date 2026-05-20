@@ -1,51 +1,51 @@
 # Trainspotter
 
-Tool per verificare la disponibilità e i prezzi dei biglietti **Italo Treno** su una specifica tratta e data.
+CLI tool and Telegram bot to check **Italo Treno** ticket availability and prices on a specific route and date.
 
-## Funzionalità
+## Features
 
-- **CLI**: Ricerca biglietti per tratta e data, mostra conteggio e range prezzi
-- **Bot Telegram**: Ricerca schedulata via espressione cron con invio automatico del report su Telegram
-- Lista dettagliata treni con orari, durata e prezzo (flag `--verbose`)
-- Configurazione via file YAML
+- **CLI**: Search tickets by route and date, shows count and price range
+- **Telegram Bot**: Scheduled search via cron expression with automatic report delivery to Telegram
+- Detailed train list with times, duration and price (`--verbose` flag)
+- YAML configuration
 
-## Requisiti
+## Requirements
 
 - Python 3.11+
 - [Playwright](https://playwright.dev/python/) (Chromium)
 
-## Installazione
+## Installation
 
 ```bash
 cd trainspotter
 
-# Crea l'ambiente virtuale
+# Create virtual environment
 uv venv
 
-# Attiva l'ambiente virtuale
+# Activate virtual environment
 source .venv/bin/activate
 
-# Installa le dipendenze
+# Install dependencies
 uv add pyyaml rich playwright apscheduler python-telegram-bot
 
-# Installa il browser Chromium per Playwright
+# Install Chromium browser for Playwright
 uv run playwright install chromium
 ```
 
-In caso di errori SSL in reti aziendali:
+In case of SSL errors on corporate networks:
 ```bash
 NODE_TLS_REJECT_UNAUTHORIZED=0 uv run playwright install chromium
 ```
 
-## Configurazione
+## Configuration
 
-Copia il file di esempio e modificalo con i tuoi dati:
+Copy the example file and edit it with your data:
 
 ```bash
 cp config.yaml.example config.yaml
 ```
 
-Il file `config.yaml.example` contiene placeholder; `config.yaml` è già escluso da Git per non esporre token e chat_id.
+`config.yaml.example` contains placeholders; `config.yaml` is excluded from Git to avoid exposing tokens and chat IDs.
 
 ```yaml
 search:
@@ -55,65 +55,70 @@ search:
   passengers: 1
 
 bot:
-  token: "IL_TUO_TOKEN_TELEGRAM"
+  token: "YOUR_TELEGRAM_BOT_TOKEN"
   chat_id: 123456789
   schedule: "35 17 * * *"
 ```
 
-### Sezione `search`
+### `search` section
 
-| Campo | Descrizione | Esempio |
+| Field | Description | Example |
 |---|---|---|
-| `origin` | Stazione di partenza | `Roma Termini`, `Napoli Centrale` |
-| `destination` | Stazione di arrivo | `Milano Centrale`, `Torino Porta Susa` |
-| `date` | Data nel formato `YYYY-MM-DD` | `2026-06-20` |
-| `passengers` | Numero di passeggeri adulti | `1` |
+| `origin` | Departure station | `Roma Termini`, `Napoli Centrale` |
+| `destination` | Arrival station | `Milano Centrale`, `Torino Porta Susa` |
+| `date` | Date in `YYYY-MM-DD` format | `2026-06-20` |
+| `passengers` | Number of adult passengers | `1` |
 
-Le stazioni supportate includono tutte le stazioni Italo (Roma Termini, Roma Tiburtina, Milano Centrale, Torino Porta Nuova, Napoli Centrale, Bologna Centrale, Firenze S.M.N., Venezia Mestre, etc.).
+Supported stations include all Italo stations (Roma Termini, Roma Tiburtina, Milano Centrale, Torino Porta Nuova, Napoli Centrale, Bologna Centrale, Firenze S.M.N., Venezia Mestre, etc.).
 
-### Sezione `bot`
+### `bot` section
 
-| Campo | Descrizione | Esempio |
+| Field | Description | Example |
 |---|---|---|
-| `token` | Token del bot Telegram (da @BotFather) | `123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11` |
-| `chat_id` | ID della chat/utente dove inviare i report | `123456789` |
-| `schedule` | Espressione cron per la schedulazione | `35 17 * * *` (17:35) |
+| `token` | Telegram bot token (from @BotFather) | `123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11` |
+| `chat_id` | Chat/user ID to receive reports | `123456789` |
+| `schedule` | Cron expression for scheduling | `35 17 * * *` (17:35) |
 
-Per ottenere il `chat_id`, avvia il bot e invia un messaggio a `@userinfobot` su Telegram.
+To get your `chat_id`, start `@userinfobot` on Telegram and send it a message.
 
-### Espressioni cron di esempio
+### Sample cron expressions
 
-| Orario | Espressione |
+| Time | Expression |
 |---|---|
-| Ogni giorno alle 08:00 | `0 8 * * *` |
-| Due volte al giorno (08:00 e 18:00) | `0 8,18 * * *` |
-| Ogni giorno alle 17:35 | `35 17 * * *` |
-| Ogni lunedì alle 09:00 | `0 9 * * 1` |
+| Every day at 08:00 | `0 8 * * *` |
+| Twice a day (08:00 and 18:00) | `0 8,18 * * *` |
+| Every day at 17:35 | `35 17 * * *` |
+| Every Monday at 09:00 | `0 9 * * 1` |
 
-## Utilizzo
+## Usage
 
-### CLI (una tantum)
+### CLI (one-off)
 
 ```bash
-# Ricerca base
-NODE_TLS_REJECT_UNAUTHORIZED=0 PYTHONPATH=src uv run python -m trainspotter
+# Basic search
+PYTHONPATH=src uv run python -m trainspotter
 
-# Con percorso config personalizzato
-NODE_TLS_REJECT_UNAUTHORIZED=0 PYTHONPATH=src uv run python -m trainspotter -c percorso/config.yaml
+# With custom config path
+PYTHONPATH=src uv run python -m trainspotter -c path/to/config.yaml
 
-# Con lista dettagliata dei treni
+# With detailed train list
+PYTHONPATH=src uv run python -m trainspotter --verbose
+```
+
+On corporate networks with self-signed SSL certificates:
+```bash
 NODE_TLS_REJECT_UNAUTHORIZED=0 PYTHONPATH=src uv run python -m trainspotter --verbose
 ```
 
-### Bot Telegram (ricerca schedulata)
+### Telegram Bot (scheduled search)
 
 ```bash
 NODE_TLS_REJECT_UNAUTHORIZED=0 PYTHONPATH=src uv run python -m trainspotter.bot
 ```
 
-Il bot rimane in esecuzione e invia automaticamente i report all'ora configurata.
+The bot stays running and automatically sends reports at the configured time.
 
-## Esempio di output CLI
+## CLI output example
 
 ```
 🚄 Roma Termini → Milano Centrale | 20 Jun 2026
@@ -132,7 +137,7 @@ Dettaglio treni:
   ...
 ```
 
-## Esempio di messaggio Telegram
+## Telegram message example
 
 ```
 🚄 Roma Termini → Milano Centrale | 20 Jun 2026
@@ -147,35 +152,35 @@ Treni disponibili: 31
 ...
 ```
 
-## Come funziona
+## How it works
 
-1. Carica la configurazione dal file YAML
-2. Risolve i codici stazione tramite l'API pubblica di Italo (`/api/v1/stations/list`)
-3. Costruisce l'URL di ricerca e naviga con Playwright headless
-4. Attende il caricamento dei risultati renderizzati lato client (React/Next.js)
-5. Esegue il parsing del testo della pagina per estrarre orari, durate e prezzi
-6. **CLI**: mostra i risultati a terminale con `rich`
-7. **Bot**: invia il report formattato su Telegram all'orario schedulato (APScheduler con espressione cron)
+1. Loads configuration from YAML file
+2. Resolves station codes via Italo's public API (`/api/v1/stations/list`)
+3. Builds the search URL and navigates with Playwright headless
+4. Waits for client-rendered results (React/Next.js)
+5. Parses the page text to extract times, durations and prices
+6. **CLI**: displays results in the terminal using `rich`
+7. **Bot**: sends a formatted report to Telegram at scheduled time (APScheduler with cron expression)
 
-## Struttura del progetto
+## Project structure
 
 ```
 trainspotter/
-├── pyproject.toml              # Dipendenze e metadati
-├── config.yaml                 # Configurazione di default
+├── pyproject.toml              # Dependencies and metadata
+├── config.yaml.example         # Example configuration template
 └── src/
     └── trainspotter/
         ├── __init__.py
-        ├── __main__.py          # Entry point CLI
-        ├── bot.py               # Bot Telegram + scheduler APScheduler
-        ├── models.py            # Dataclass (SearchConfig, BotConfig, TrainResult, PriceRange)
-        ├── config.py            # Caricamento e validazione YAML
-        ├── stations.py          # Mappa nomi stazioni → codici stazione
-        └── scraper.py           # Automazione browser e parsing risultati
+        ├── __main__.py          # CLI entry point
+        ├── bot.py               # Telegram bot + APScheduler
+        ├── models.py            # Dataclasses (SearchConfig, BotConfig, TrainResult, PriceRange)
+        ├── config.py            # YAML loading and validation
+        ├── stations.py          # Station name → station code mapping
+        └── scraper.py           # Browser automation and result parsing
 ```
 
-## Note
+## Notes
 
-- Il tool utilizza Playwright in modalità headless per aggirare la protezione anti-bot del CDN Akamai.
-- In reti aziendali con certificati SSL self-signed, impostare `NODE_TLS_REJECT_UNAUTHORIZED=0`.
-- I prezzi visualizzati sono i prezzi di partenza per tratta e possono variare in base alla tariffa e ai servizi selezionati.
+- The tool uses Playwright in headless mode to bypass Akamai CDN bot protection.
+- On corporate networks with self-signed SSL certificates, set `NODE_TLS_REJECT_UNAUTHORIZED=0`.
+- Prices shown are starting prices per route and may vary based on fare type and selected services.
