@@ -1,0 +1,10 @@
+search:
+  origin: "Roma Termini"
+  destination: "Milano Centrale"
+  date: "2026-06-20"
+  passengers: 1
+
+bot:
+  token: "IL_TUO_TOKEN_TELEGRAM"
+  chat_id: 123456789
+  schedule: "35 17 * * *"

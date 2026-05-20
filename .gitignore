@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# Virtual environment
+.venv/
+venv/
+.env/
+
+# Playwright browsers (downloaded at install time)
+/Users/*/Library/Caches/ms-playwright/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Config with secrets (template provided)
+config.yaml
+!config.yaml.example
+
+# Tooling
+.playwright-mcp/
