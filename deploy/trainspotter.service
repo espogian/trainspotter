@@ -5,10 +5,10 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-User=pi
-WorkingDirectory=/home/pi/trainspotter
-Environment=PYTHONPATH=/home/pi/trainspotter/src
-ExecStart=/home/pi/trainspotter/.venv/bin/python -m trainspotter.bot
+User=USERNAME
+WorkingDirectory=HOME_DIR/trainspotter
+Environment=PYTHONPATH=HOME_DIR/trainspotter/src
+ExecStart=HOME_DIR/trainspotter/.venv/bin/python -m trainspotter.bot
 Restart=on-failure
 RestartSec=30
 
