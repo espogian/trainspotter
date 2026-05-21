@@ -152,6 +152,70 @@ Treni disponibili: 31
 ...
 ```
 
+## Deploy on Raspberry Pi
+
+The bot is designed to run 24/7 on a Raspberry Pi (Pi 4 recommended, 2GB+ RAM).
+
+### One-line setup
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/espogian/trainspotter/main/deploy/setup-pi.sh | bash
+nano ~/trainspotter/config.yaml         # insert your token and chat_id
+sudo systemctl restart trainspotter
+```
+
+### Manual setup
+
+```bash
+# 1. System dependencies
+sudo apt update && sudo apt install -y python3 python3-pip curl git
+
+# 2. Install uv
+curl -LsSf https://astral.sh/uv/install.sh | sh
+source ~/.bashrc
+
+# 3. Clone and install
+git clone https://github.com/espogian/trainspotter.git
+cd trainspotter
+uv venv
+source .venv/bin/activate
+uv sync
+uv run playwright install chromium
+cp config.yaml.example config.yaml
+nano config.yaml
+
+# 4. Install systemd service (auto-start + auto-restart on crash)
+sudo cp deploy/trainspotter.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable trainspotter
+sudo systemctl start trainspotter
+```
+
+### Useful commands
+
+```bash
+# View logs
+sudo journalctl -u trainspotter -f
+
+# Restart the bot
+sudo systemctl restart trainspotter
+
+# Stop the bot
+sudo systemctl stop trainspotter
+
+# Update to the latest version
+cd ~/trainspotter
+git pull
+sudo systemctl restart trainspotter
+```
+
+### Notes for Pi
+
+- **RAM**: Chromium headless + Python use ~300-400MB. Pi 4 (2GB+) handles it comfortably.
+- **Home network**: SSL workarounds (`NODE_TLS_REJECT_UNAUTHORIZED`) are not needed.
+- **SD card**: The bot stays in sleep mode most of the time and only runs briefly once or twice a day — minimal writes.
+- **Playwright on ARM**: Fully supported — `playwright install chromium` downloads the ARM64 build automatically.
+
 ## How it works
 
 1. Loads configuration from YAML file
