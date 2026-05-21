@@ -7,4 +7,4 @@ search:
 bot:
   token: "IL_TUO_TOKEN_TELEGRAM"
   chat_id: 123456789
-  schedule: "35 17 * * *"
+  schedule: "35 */4 * * *"
